@@ -1,17 +1,14 @@
 "use client";
 
-import { Input } from "@/components/Input";
-import { Button } from "@/components/Button";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
-  return (
-    <div style={{ maxWidth: "400px", margin: "40px auto" }}>
-      <h1>Testando Componentes</h1>
+export default function HomePage() {
+  const router = useRouter();
 
-      <Input label="Email" />
-      <Input label="Senha" type="password" />
+  useEffect(() => {
+    router.push("/login");
+  }, [router]);
 
-      <Button>Entrar</Button>
-    </div>
-  );
+  return null;
 }

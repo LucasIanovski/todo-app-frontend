@@ -1,15 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/Button";
 import { getLoggedUser, logoutUser } from "@/services/auth";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/Button";
 
-type TodoItem = {
-  id: number;
-  text: string;
-};
+type TodoItem = { id: number; text: string };
 
 export default function TodoPage() {
   const router = useRouter();
@@ -17,80 +13,68 @@ export default function TodoPage() {
   const [task, setTask] = useState("");
   const [todos, setTodos] = useState<TodoItem[]>([]);
 
-  // Proteção da página: só acessível se usuário estiver logado
   useEffect(() => {
     const logged = getLoggedUser();
-    if (!logged) {
-      router.push("/login"); // Redireciona para login se não estiver logado
-    } else {
+    if (!logged) router.push("/login");
+    else {
       setUser(logged);
       const savedTodos = JSON.parse(localStorage.getItem(`${logged.email}_todos`) || "[]");
       setTodos(savedTodos);
     }
   }, [router]);
 
-  // Adicionar nova tarefa
   function addTodo() {
     if (!task) return;
-
     const newTodos = [...todos, { id: Date.now(), text: task }];
     setTodos(newTodos);
     localStorage.setItem(`${user.email}_todos`, JSON.stringify(newTodos));
     setTask("");
   }
 
-  // Remover tarefa
   function removeTodo(id: number) {
     const newTodos = todos.filter((t) => t.id !== id);
     setTodos(newTodos);
     localStorage.setItem(`${user.email}_todos`, JSON.stringify(newTodos));
   }
 
-  // Logout
   function handleLogout() {
     logoutUser();
     router.push("/login");
   }
 
-  if (!user) return null; // Evita renderizar antes da verificação do login
+  if (!user) return null;
 
   return (
-    <div style={{ maxWidth: "500px", margin: "40px auto" }}>
-      <h1>Todo List de {user.name}</h1>
+    <div style={{ minHeight: "100vh", backgroundColor: "#E2E4E6", padding: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1 style={{ color: "#172B4D" }}>Kanban de {user.name}</h1>
+        <Button onClick={handleLogout} style={{ backgroundColor: "#EB5A46" }}>Logout</Button>
+      </div>
 
-      <Button
-        onClick={handleLogout}
-        style={{ backgroundColor: "red", marginBottom: "20px" }}
-      >
-        Logout
-      </Button>
+      <div style={{ marginTop: "20px" }}>
+        <input
+          type="text"
+          placeholder="Nova tarefa"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          style={{ padding: "10px", borderRadius: "6px", border: "1px solid #ccc", width: "300px", marginRight: "10px" }}
+        />
+        <Button onClick={addTodo} style={{ backgroundColor: "#5AAC44" }}>Adicionar</Button>
+      </div>
 
-      <Input
-        label="Nova tarefa"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-      />
-      <Button onClick={addTodo}>Adicionar</Button>
-
-      <ul style={{ marginTop: "20px", paddingLeft: "20px" }}>
-        {todos.map((t) => (
-          <li key={t.id} style={{ marginBottom: "10px" }}>
-            {t.text}{" "}
-            <button
-              onClick={() => removeTodo(t.id)}
-              style={{
-                color: "red",
-                marginLeft: "10px",
-                cursor: "pointer",
-                border: "none",
-                background: "none",
-              }}
-            >
-              Remover
-            </button>
-          </li>
+      <div style={{ display: "flex", gap: "20px", marginTop: "30px" }}>
+        {["To Do", "Doing", "Done"].map((col) => (
+          <div key={col} style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "8px", flex: 1, boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }}>
+            <h3 style={{ textAlign: "center" }}>{col}</h3>
+            {col === "To Do" && todos.map(todo => (
+              <div key={todo.id} style={{ backgroundColor: "#fff", padding: "10px", borderRadius: "6px", margin: "8px 0", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {todo.text}
+                <button onClick={() => removeTodo(todo.id)} style={{ background: "none", border: "none", color: "red", cursor: "pointer" }}>✕</button>
+              </div>
+            ))}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

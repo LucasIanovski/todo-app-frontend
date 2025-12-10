@@ -8,60 +8,39 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const router = useRouter();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Protege a página se o usuário já estiver logado
   useEffect(() => {
     const logged = getLoggedUser();
-    if (logged) {
-      router.push("/todo");
-    }
+    if (logged) router.push("/todo");
   }, [router]);
 
   function handleRegister() {
     try {
-      registerUser(name, email, password); // Tenta registrar
+      registerUser(name, email, password);
       alert("Cadastro realizado com sucesso!");
-      router.push("/login"); // Redireciona para login
+      router.push("/login");
     } catch (err: any) {
-      setError(err.message); // Mostra erro se falhar
+      setError(err.message);
     }
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "40px auto" }}>
-      <h1>Criar Conta</h1>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      <Input
-        label="Nome"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-
-      <Input
-        label="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-
-      <Input
-        label="Senha"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-      <Button onClick={handleRegister}>Cadastrar</Button>
-
-      <p style={{ marginTop: "20px" }}>
-        Já tem conta? <a href="/login">Entrar</a>
-      </p>
+    <div style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#0079BF" }}>
+      <div style={{ backgroundColor: "#fff", padding: "40px", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", width: "100%", maxWidth: "400px" }}>
+        <h1 style={{ color: "#172B4D", marginBottom: "20px", textAlign: "center" }}>Criar Conta</h1>
+        {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+        <Input label="Nome" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome"/>
+        <Input label="Email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seuemail@email.com"/>
+        <Input label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="******"/>
+        <Button onClick={handleRegister} style={{ width: "100%", marginTop: "10px" }}>Cadastrar</Button>
+        <p style={{ marginTop: "20px", textAlign: "center", color: "#172B4D" }}>
+          Já tem conta? <a href="/login" style={{ color: "#026AA7", fontWeight: "bold" }}>Entrar</a>
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,23 +1,29 @@
-export function registerUser(name: string, email: string, password: string) {
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
+interface User {
+  name: string;
+  email: string;
+  password: string;
+}
 
-  // Verifica se o email já existe
-  if (users.find((u: any) => u.email === email)) {
+export function registerUser(name: string, email: string, password: string) {
+  const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+
+  if (!name || !email || !password) {
+    throw new Error("Todos os campos são obrigatórios");
+  }
+
+  if (users.find(u => u.email === email)) {
     throw new Error("Email já cadastrado");
   }
 
   users.push({ name, email, password });
-
   localStorage.setItem("users", JSON.stringify(users));
 }
 
 export function loginUser(email: string, password: string) {
-  const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-  const user = users.find((u: any) => u.email === email && u.password === password);
+  const users: User[] = JSON.parse(localStorage.getItem("users") || "[]");
+  const user = users.find(u => u.email === email && u.password === password);
 
   if (!user) throw new Error("Credenciais inválidas");
-
   localStorage.setItem("loggedUser", JSON.stringify(user));
 }
 

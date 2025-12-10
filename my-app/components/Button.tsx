@@ -1,24 +1,33 @@
+"use client";
+
 import React from "react";
 
-type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+interface ButtonProps {
+  onClick?: () => void;
   children: React.ReactNode;
-};
+  style?: React.CSSProperties;
+}
 
-export function Button({ children, ...props }: ButtonProps) {
+export const Button: React.FC<ButtonProps> = ({ onClick, children, style }) => {
   return (
     <button
-      {...props}
+      onClick={onClick}
       style={{
-        padding: "10px 16px",
-        backgroundColor: "#0070f3",
-        color: "white",
+        padding: "12px 20px",
+        backgroundColor: "#026AA7",
+        color: "#fff",
         border: "none",
-        borderRadius: "4px",
+        borderRadius: "6px",
         cursor: "pointer",
-        marginTop: "10px"
+        fontWeight: 500,
+        fontSize: "14px",
+        transition: "background-color 0.2s",
+        ...style,
       }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#055A8C")}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = style?.backgroundColor || "#026AA7")}
     >
       {children}
     </button>
   );
-}
+};
